@@ -1,6 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import Task from '../task';
 import NewTaskForm from '../new-task-form';
 import TaskList from '../task-list';
 import Footer from '../footer';
@@ -9,13 +7,7 @@ class App extends React.Component<{}, any> {
   id = 100;
 
   state = {
-    todoData: [
-      this.createTodoItem('drink coffee'),
-      this.createTodoItem('react app'),
-      this.createTodoItem('huy znaet'),
-      // {id: 1, description: 'Eat q meat'},
-      // {id: 2, description: 'React wtf'},
-    ],
+    todoData: [this.createTodoItem('drink coffee')],
     filter: 'all',
   };
 
@@ -124,7 +116,7 @@ class App extends React.Component<{}, any> {
 
   render() {
     const doneCount = this.state.todoData.filter(
-      (el) => el.done
+      (el) => el.done || 0
     ).length;
 
     const visibleItems = this.filter(

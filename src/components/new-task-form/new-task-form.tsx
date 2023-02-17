@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
 
 export default class NewTaskForm extends React.Component {
   state = {
