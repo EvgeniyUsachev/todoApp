@@ -1,33 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import {ListData} from '../../models';
-import {formatDistanceToNow} from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 
+type TypeProps = {
+  description: string;
+  key: number;
+  onDeleted: (e: React.MouseEvent<HTMLElement>) => void;
+  onToggleDone: (e: React.MouseEvent<HTMLElement>) => void;
+  done: boolean;
+  addItem: () => void;
+  changeItem: (text: string) => void;
+};
 class Task extends React.Component {
-  //interface MyProps {
-  //   ...
-  // }
-
-  // interface MyState {
-  //   value: string
-  // }
-
-  // class App extends React.Component<MyProps, MyState> {
-  //   ...
-  // }
-
-  //   onLabelClick = () => {
-  //     console.log(`done ${this.props.list.description}`);
-  //   };
-
-  //   constructor(state: object) {
-  //     super(state);
-  //     this.state = {
-  //       done: false,
-  //     };
-  //   }
-
-  // если мы хотим поменять состоние в зависимости от предыдущего, то надо в сет стейт вызвать функцию
   state = {
     editing: false,
     value: '',
@@ -36,11 +19,19 @@ class Task extends React.Component {
   static defaultProps = {
     description: 'add description property',
     key: 1,
-    onDeleted: () => {},
-    onToggleDone: () => {},
+    onDeleted: () => {
+      1;
+    },
+    onToggleDone: () => {
+      1;
+    },
     done: false,
-    addItem: () => {},
-    changeItem: () => {},
+    addItem: () => {
+      1;
+    },
+    changeItem: () => {
+      1;
+    },
   };
 
   onEdit = () => {
@@ -50,13 +41,14 @@ class Task extends React.Component {
     });
   };
 
-  onLabelChange = (e: any) => {
+  onLabelChange = (e: React.FormEvent<HTMLInputElement>) => {
     this.setState({
-      value: e.target.value,
+      value: e.currentTarget.value,
     });
+    console.log(this.props);
   };
 
-  onSubmit = (e: any) => {
+  onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     this.setState({
       editing: false,
@@ -65,14 +57,14 @@ class Task extends React.Component {
     this.props.changeItem(this.state.value);
   };
 
-  props: any = this.props;
+  props: TypeProps = this.props;
 
   startTime = new Date().getTime();
 
   render() {
-    const {editing, value} = this.state;
+    const { editing, value } = this.state;
 
-    let time = formatDistanceToNow(this.startTime, {
+    const time = formatDistanceToNow(this.startTime, {
       includeSeconds: true,
     });
 
@@ -86,36 +78,17 @@ class Task extends React.Component {
 
     return (
       <li className={className}>
-        <div className='view'>
-          <input
-            className='toggle'
-            type='checkbox'
-            onClick={this.props.onToggleDone}
-          />
+        <div className="view">
+          <input className="toggle" type="checkbox" onClick={this.props.onToggleDone} />
           <label>
-            <span className='description'>
-              {this.props.description}
-            </span>
-            <span className='created'>
-              created {time} ago{' '}
-            </span>
+            <span className="description">{this.props.description}</span>
+            <span className="created">created {time} ago </span>
           </label>
-          <button
-            className='icon icon-edit'
-            onClick={this.onEdit}
-          ></button>
-          <button
-            className='icon icon-destroy'
-            onClick={this.props.onDeleted}
-          ></button>
+          <button className="icon icon-edit" onClick={this.onEdit}></button>
+          <button className="icon icon-destroy" onClick={this.props.onDeleted}></button>
         </div>
         <form onSubmit={this.onSubmit}>
-          <input
-            className='edit'
-            type='text'
-            onChange={this.onLabelChange}
-            value={value}
-          />
+          <input className="edit" type="text" onChange={this.onLabelChange} value={value} />
         </form>
       </li>
     );

@@ -1,49 +1,36 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+
 import Task from '../task';
-// import {ListData} from '../../models';
 
-// export interface ListData {
-//     class: string;
-//     description: string;
-//   }
-
-// interface ListData {
-//   description: string;
-// }
-
-// const taskData: ListData[] = [
-//   {
-//     description: 'My task',
-//   },
-// ];
-
-// let onDeleted = () => {
-//   console.log('deleted');
-// };
-
+type TypeProps = {
+  todoData: any;
+  onDeleted: (id: number) => void;
+  onToggleDone: (id: number) => void;
+  addItem: (text: string) => void;
+  changeItem: (text: string, id: number) => void;
+};
 class TaskList extends React.Component {
-  props: any = this.props;
+  props: TypeProps = this.props;
 
   static defaultProps = {
     todoData: {},
-    onDeleted: () => {},
-    onToggleDone: () => {},
-    addItem: () => {},
-    changeItem: () => {},
+    onDeleted: () => {
+      1;
+    },
+    onToggleDone: () => {
+      1;
+    },
+    addItem: () => {
+      1;
+    },
+    changeItem: () => {
+      1;
+    },
   };
 
   render() {
-    let listItem = this.props.todoData.map(
-      ({
-        id,
-        description,
-        done,
-      }: {
-        id: any;
-        description: any;
-        done: boolean;
-      }) => {
+    const listItem = this.props.todoData.map(
+      ({ id, description, done }: { id: number; description: string; done: boolean }) => {
         return (
           <Task
             description={description}
@@ -51,16 +38,14 @@ class TaskList extends React.Component {
             onDeleted={() => this.props.onDeleted(id)}
             onToggleDone={() => this.props.onToggleDone(id)}
             done={done}
-            addItem={() => this.props.addItem()}
-            changeItem={(text: any) =>
-              this.props.changeItem(text, id)
-            }
+            addItem={() => this.props.addItem('asd')}
+            changeItem={(text: string) => this.props.changeItem(text, id)}
           />
         );
       }
     );
 
-    return <ul className='todo-list'>{listItem}</ul>;
+    return <ul className="todo-list">{listItem}</ul>;
   }
 }
 

@@ -1,22 +1,21 @@
 import React from 'react';
+
 import TasksFilter from '../tasks-filter';
 
-const Footer = (props: any) => {
+type TypeProps = {
+  total: number;
+  doneCount: number;
+  onFilterChange: (text: string) => void;
+  filter: string;
+  clearCompleted: () => void;
+};
+
+const Footer = (props: TypeProps) => {
   return (
-    <footer className='footer'>
-      <span className='todo-count'>
-        {props.total - props.doneCount} items left
-      </span>
-      <TasksFilter
-        onFilterChange={(text: any) =>
-          props.onFilterChange(text)
-        }
-        filter={props.filter}
-      />
-      <button
-        className='clear-completed'
-        onClick={props.clearCompleted}
-      >
+    <footer className="footer">
+      <span className="todo-count">{props.total - props.doneCount} items left</span>
+      <TasksFilter onFilterChange={(text: string) => props.onFilterChange(text)} filter={props.filter} />
+      <button className="clear-completed" onClick={props.clearCompleted}>
         Clear completed
       </button>
     </footer>

@@ -1,5 +1,9 @@
 import React from 'react';
 
+type TypeProps = {
+  addItem: (description: string) => void;
+};
+
 export default class NewTaskForm extends React.Component {
   state = {
     description: '',
@@ -9,15 +13,15 @@ export default class NewTaskForm extends React.Component {
     addItem: () => console.log('default props works'),
   };
 
-  props: any = this.props;
+  props: TypeProps = this.props;
 
-  onLabelChange = (e: any) => {
+  onLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       description: e.target.value,
     });
   };
 
-  onSubmit = (e: any) => {
+  onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     this.props.addItem(this.state.description);
     this.setState({
@@ -27,12 +31,12 @@ export default class NewTaskForm extends React.Component {
 
   render() {
     return (
-      <form className='header' onSubmit={this.onSubmit}>
+      <form className="header" onSubmit={this.onSubmit}>
         <h1>todos</h1>
         <input
-          type='text'
-          className='new-todo'
-          placeholder='What needs to be done?'
+          type="text"
+          className="new-todo"
+          placeholder="What needs to be done?"
           autoFocus
           onChange={this.onLabelChange}
           value={this.state.description}

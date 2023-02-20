@@ -1,9 +1,20 @@
 import React from 'react';
+
 import NewTaskForm from '../new-task-form';
 import TaskList from '../task-list';
 import Footer from '../footer';
 
-class App extends React.Component<{}, any> {
+type TypeTask = {
+  description?: string;
+  done: boolean;
+  id: number;
+};
+
+interface IState {
+  todoData: TypeTask[];
+}
+
+class App extends React.Component {
   id = 100;
 
   state = {
@@ -11,7 +22,7 @@ class App extends React.Component<{}, any> {
     filter: 'all',
   };
 
-  createTodoItem(description: any) {
+  createTodoItem(description: string) {
     return {
       description,
       done: false,
@@ -19,11 +30,9 @@ class App extends React.Component<{}, any> {
     };
   }
 
-  deleteItem = (id: any) => {
-    this.setState(({todoData}: any) => {
-      const index = todoData.findIndex(
-        (el: any) => el.id === id
-      );
+  deleteItem = (id: number) => {
+    this.setState(({ todoData }: IState) => {
+      const index = todoData.findIndex((el: TypeTask) => el.id === id);
       const before = todoData.slice(0, index);
       const after = todoData.slice(index + 1);
       const newTodoData = [...before, ...after];
@@ -36,7 +45,7 @@ class App extends React.Component<{}, any> {
   addItem = (text: string) => {
     const newItem = this.createTodoItem(text);
 
-    this.setState(({todoData}: any) => {
+    this.setState(({ todoData }: IState) => {
       const newArray = [...todoData, newItem];
       return {
         todoData: newArray,
@@ -46,12 +55,10 @@ class App extends React.Component<{}, any> {
 
   changeItem = (text: string, id: number) => {
     console.log(text, id);
-    this.setState(({todoData}: any) => {
-      const index = todoData.findIndex(
-        (el: any) => el.id === id
-      );
+    this.setState(({ todoData }: IState) => {
+      const index = todoData.findIndex((el: TypeTask) => el.id === id);
       const oldItem = todoData[index];
-      const newItem = {...oldItem, description: text};
+      const newItem = { ...oldItem, description: text };
 
       //put new object on array
       const before = todoData.slice(0, index);
@@ -64,12 +71,10 @@ class App extends React.Component<{}, any> {
   };
 
   onToggleDone = (id: number) => {
-    this.setState(({todoData}: any) => {
-      const index = todoData.findIndex(
-        (el: any) => el.id === id
-      );
+    this.setState(({ todoData }: IState) => {
+      const index = todoData.findIndex((el: TypeTask) => el.id === id);
       const oldItem = todoData[index];
-      const newItem = {...oldItem, done: !oldItem.done};
+      const newItem = { ...oldItem, done: !oldItem.done };
 
       //put new object on array
       const before = todoData.slice(0, index);
@@ -88,44 +93,39 @@ class App extends React.Component<{}, any> {
     });
   };
 
-  filter = (items: any, filter: any) => {
+  filter = (items: Array<TypeTask>, filter: string) => {
     if (filter === 'all') {
       return items;
     } else if (filter === 'done') {
-      return items.filter((task: any) => {
+      return items.filter((task: TypeTask) => {
         return task.done;
       });
     } else if (filter === 'active') {
-      return items.filter((task: any) => {
+      return items.filter((task: TypeTask) => {
         return !task.done;
       });
     }
   };
 
   clearCompleted = () => {
-    this.setState(({todoData}: any) => {
-      const newArr: any = [];
-      todoData.forEach((item: any, index: any) => {
+    this.setState(({ todoData }: IState) => {
+      const newArr: Array<TypeTask> = [];
+      todoData.forEach((item: TypeTask) => {
         if (!item.done) {
           newArr.push(item);
         }
       });
-      return {todoData: newArr};
+      return { todoData: newArr };
     });
   };
 
   render() {
-    const doneCount = this.state.todoData.filter(
-      (el) => el.done || 0
-    ).length;
+    const doneCount = this.state.todoData.filter((el) => el.done || 0).length;
 
-    const visibleItems = this.filter(
-      this.state.todoData,
-      this.state.filter
-    );
+    const visibleItems = this.filter(this.state.todoData, this.state.filter);
 
     return (
-      <section className='todoapp'>
+      <section className="todoapp">
         <NewTaskForm addItem={this.addItem} />
         <TaskList
           todoData={visibleItems}
