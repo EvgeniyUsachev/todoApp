@@ -9,12 +9,20 @@ type TypeProps = {
   done: boolean;
   addItem: () => void;
   changeItem: (text: string) => void;
+  minutes: string;
+  seconds: string;
+  onStop: () => void;
+  timerIsActive: boolean;
+  onPlay: () => void;
+  onTick: () => void;
 };
 class Task extends React.Component {
   state = {
     editing: false,
     value: '',
   };
+
+  interval: any;
 
   static defaultProps = {
     description: 'add description property',
@@ -34,6 +42,16 @@ class Task extends React.Component {
     },
   };
 
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(() => {
+      this.props.onTick();
+    }, 1000);
+  }
+
   onEdit = () => {
     this.setState({
       editing: true,
@@ -45,7 +63,6 @@ class Task extends React.Component {
     this.setState({
       value: e.currentTarget.value,
     });
-    console.log(this.props);
   };
 
   onSubmit = (e: React.FormEvent) => {
@@ -56,6 +73,24 @@ class Task extends React.Component {
 
     this.props.changeItem(this.state.value);
   };
+
+  onPlay = () => {
+    this.interval = setInterval(() => {
+      this.props.onTick();
+    }, 1000);
+  };
+
+  onStop = () => {
+    clearInterval(this.interval);
+  };
+
+  // tick = (minutes: string, seconds: string) => {
+  //   if (Number(minutes) !== 0 && Number(seconds) === 0) {
+  //     this.setState(({ todoData }: IState) => {
+  //       minutes:
+  //     });
+  //   }
+  // };
 
   props: TypeProps = this.props;
 
@@ -76,13 +111,21 @@ class Task extends React.Component {
       className = 'editing';
     }
 
+    console.log('mins', this.props.minutes);
+    console.log('active', this.props.timerIsActive);
+
     return (
       <li className={className}>
         <div className="view">
           <input className="toggle" type="checkbox" onClick={this.props.onToggleDone} />
           <label>
-            <span className="description">{this.props.description}</span>
-            <span className="created">created {time} ago </span>
+            <span className="title">{this.props.description}</span>
+            <span className="description">
+              <button className="icon icon-play" onClick={this.onPlay}></button>
+              <button className="icon icon-pause" onClick={this.onStop}></button>
+              {this.props.minutes}:{this.props.seconds}
+            </span>
+            <span className="description">created {time} ago </span>
           </label>
           <button className="icon icon-edit" onClick={this.onEdit}></button>
           <button className="icon icon-destroy" onClick={this.props.onDeleted}></button>
@@ -95,24 +138,4 @@ class Task extends React.Component {
   }
 }
 
-// const Task = (props: ListProps) => {
-//   console.log(props);
-//   return (
-//     <li className={props.list.class}>
-//       <div className='view'>
-//         <input className='toggle' type='checkbox' />
-//         <label>
-//           <span className='description'>
-//             {props.list.description}
-//           </span>
-//           <span className='created'>
-//             created 5 minutes ago
-//           </span>
-//         </label>
-//         <button className='icon icon-edit'></button>
-//         <button className='icon icon-destroy'></button>
-//       </div>
-//     </li>
-//   );
-// };
 export default Task;

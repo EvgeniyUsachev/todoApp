@@ -8,6 +8,8 @@ type TypeTask = {
   description?: string;
   done: boolean;
   id: number;
+  minutes: string;
+  seconds: string;
 };
 
 interface IState {
@@ -16,17 +18,21 @@ interface IState {
 
 class App extends React.Component {
   id = 100;
+  interval: any;
 
   state = {
-    todoData: [this.createTodoItem('drink coffee')],
+    todoData: [],
     filter: 'all',
   };
 
-  createTodoItem(description: string) {
+  createTodoItem(description: string, minutes: string, seconds: string) {
     return {
       description,
       done: false,
       id: this.id++,
+      minutes,
+      seconds,
+      timerIsActive: true,
     };
   }
 
@@ -42,8 +48,20 @@ class App extends React.Component {
     });
   };
 
-  addItem = (text: string) => {
-    const newItem = this.createTodoItem(text);
+  addItem = (text: string, minutes: string, seconds: string) => {
+    if (!minutes.match(/^\d+$/) || !seconds.match(/^\d+$/)) {
+      alert('Неверный формат времени ');
+      return;
+    }
+    if (Number(seconds) > 59) {
+      alert('Секунда не может превышать 60');
+      return;
+    }
+    if (minutes === '') {
+      alert('Введите время');
+    }
+
+    const newItem = this.createTodoItem(text, minutes, seconds);
 
     this.setState(({ todoData }: IState) => {
       const newArray = [...todoData, newItem];
@@ -54,7 +72,6 @@ class App extends React.Component {
   };
 
   changeItem = (text: string, id: number) => {
-    console.log(text, id);
     this.setState(({ todoData }: IState) => {
       const index = todoData.findIndex((el: TypeTask) => el.id === id);
       const oldItem = todoData[index];
@@ -68,6 +85,45 @@ class App extends React.Component {
         todoData: newTodoData,
       };
     });
+  };
+
+  onTick = (id: number) => {
+    this.setState(({ todoData }: IState) => {
+      const index = todoData.findIndex((el: TypeTask) => el.id === id);
+      const oldItem = todoData[index];
+      if (Number(oldItem.minutes) !== 0 && Number(oldItem.seconds) === 0) {
+        const newItem = { ...oldItem, minutes: Number(oldItem.minutes) - 1, seconds: 59 };
+        const before = todoData.slice(0, index);
+        const after = todoData.slice(index + 1);
+        const newTodoData = [...before, newItem, ...after];
+        return {
+          todoData: newTodoData,
+        };
+      } else if (Number(oldItem.minutes) === 0 && Number(oldItem.seconds) === 0) {
+        const newItem = { ...oldItem, minutes: 0, seconds: 0 };
+        const before = todoData.slice(0, index);
+        const after = todoData.slice(index + 1);
+        const newTodoData = [...before, newItem, ...after];
+      } else {
+        const newItem = { ...oldItem, seconds: Number(oldItem.seconds) - 1 };
+        const before = todoData.slice(0, index);
+        const after = todoData.slice(index + 1);
+        const newTodoData = [...before, newItem, ...after];
+        return {
+          todoData: newTodoData,
+        };
+      }
+    });
+  };
+
+  onPlay = (id: number) => {
+    this.interval = setInterval(() => {
+      this.onTick(id);
+    }, 1000);
+  };
+
+  onStop = () => {
+    clearInterval(this.interval);
   };
 
   onToggleDone = (id: number) => {
@@ -120,8 +176,7 @@ class App extends React.Component {
   };
 
   render() {
-    const doneCount = this.state.todoData.filter((el) => el.done || 0).length;
-
+    const doneCount = this.state.todoData.filter((el: TypeTask) => el.done).length;
     const visibleItems = this.filter(this.state.todoData, this.state.filter);
 
     return (
@@ -131,8 +186,11 @@ class App extends React.Component {
           todoData={visibleItems}
           onDeleted={this.deleteItem}
           onToggleDone={this.onToggleDone}
-          addItem={this.addItem}
+          // addItem={this.addItem}
           changeItem={this.changeItem}
+          onTick={this.onTick}
+          onPlay={this.onPlay}
+          onStop={this.onStop}
         />
         <Footer
           total={this.state.todoData.length}

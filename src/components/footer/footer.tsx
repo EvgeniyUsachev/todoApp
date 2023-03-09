@@ -16,7 +16,7 @@ const Footer = (props: TypeProps) => {
       <span className="todo-count">{props.total - props.doneCount} items left</span>
       <TasksFilter onFilterChange={(text: string) => props.onFilterChange(text)} filter={props.filter} />
       <button className="clear-completed" onClick={props.clearCompleted}>
-        Clear completed
+        Clear completedd
       </button>
     </footer>
   );

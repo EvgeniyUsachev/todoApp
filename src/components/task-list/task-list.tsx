@@ -6,8 +6,12 @@ type TypeProps = {
   todoData: any;
   onDeleted: (id: number) => void;
   onToggleDone: (id: number) => void;
-  addItem: (text: string) => void;
+  addItem: (text: string, minutes?: number, seconds?: number) => void;
   changeItem: (text: string, id: number) => void;
+  onTick: (id: number) => void;
+  // timerIsActive: boolean;
+  onPlay: (id: number) => void;
+  onStop: () => void;
 };
 class TaskList extends React.Component {
   props: TypeProps = this.props;
@@ -30,7 +34,21 @@ class TaskList extends React.Component {
 
   render() {
     const listItem = this.props.todoData.map(
-      ({ id, description, done }: { id: number; description: string; done: boolean }) => {
+      ({
+        id,
+        description,
+        done,
+        minutes,
+        seconds,
+        timerIsActive,
+      }: {
+        id: number;
+        description: string;
+        done: boolean;
+        minutes: string;
+        seconds: string;
+        timerIsActive: boolean;
+      }) => {
         return (
           <Task
             description={description}
@@ -38,8 +56,14 @@ class TaskList extends React.Component {
             onDeleted={() => this.props.onDeleted(id)}
             onToggleDone={() => this.props.onToggleDone(id)}
             done={done}
-            addItem={() => this.props.addItem('asd')}
+            // addItem={() => this.props.addItem('asd')}
             changeItem={(text: string) => this.props.changeItem(text, id)}
+            minutes={minutes}
+            seconds={seconds}
+            onPlay={() => this.props.onPlay(id)}
+            onStop={() => this.props.onStop()}
+            timerIsActive={timerIsActive}
+            onTick={() => this.props.onTick(id)}
           />
         );
       }
@@ -48,5 +72,4 @@ class TaskList extends React.Component {
     return <ul className="todo-list">{listItem}</ul>;
   }
 }
-
 export default TaskList;
