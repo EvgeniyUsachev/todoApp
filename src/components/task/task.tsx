@@ -75,6 +75,7 @@ class Task extends React.Component {
   };
 
   onPlay = () => {
+    clearInterval(this.interval);
     this.interval = setInterval(() => {
       this.props.onTick();
     }, 1000);

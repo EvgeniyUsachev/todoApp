@@ -117,6 +117,7 @@ class App extends React.Component {
   };
 
   onPlay = (id: number) => {
+    clearInterval(this.interval);
     this.interval = setInterval(() => {
       this.onTick(id);
     }, 1000);
