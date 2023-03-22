@@ -9,30 +9,28 @@ type TypeButton = {
   name: string;
   label: string;
 };
-class TasksFilter extends React.Component {
-  buttons = [
+const TasksFilter = (props: TypeProps) => {
+  const buttons = [
     { name: 'all', label: 'All' },
     { name: 'active', label: 'Active' },
     { name: 'done', label: 'Completed' },
   ];
 
-  props: TypeProps = this.props;
+  // props: TypeProps = this.props;
 
-  render() {
-    const buttons = this.buttons.map((button: TypeButton) => {
-      const isActive = this.props.filter === button.name;
-      const clazz = isActive ? 'selected' : '';
-      return (
-        <li key={button.name}>
-          <button className={clazz} onClick={() => this.props.onFilterChange(button.name)}>
-            {button.label}
-          </button>
-        </li>
-      );
-    });
+  const buttonsArr = buttons.map((button: TypeButton) => {
+    const isActive = props.filter === button.name;
+    const clazz = isActive ? 'selected' : '';
+    return (
+      <li key={button.name}>
+        <button className={clazz} onClick={() => props.onFilterChange(button.name)}>
+          {button.label}
+        </button>
+      </li>
+    );
+  });
 
-    return <ul className="filters">{buttons}</ul>;
-  }
-}
+  return <ul className="filters">{buttonsArr}</ul>;
+};
 
 export default TasksFilter;

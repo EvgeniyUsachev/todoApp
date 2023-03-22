@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import NewTaskForm from '../new-task-form';
 import TaskList from '../task-list';
@@ -16,39 +16,40 @@ interface IState {
   todoData: TypeTask[];
 }
 
-class App extends React.Component {
-  id = 100;
-  interval: any;
+const App = () => {
+  const [todoData, setTodoData] = React.useState([]);
 
-  state = {
-    todoData: [],
-    filter: 'all',
-  };
+  const [filter, setFilter] = React.useState('all');
 
-  createTodoItem(description: string, minutes: string, seconds: string) {
+  // state = {
+  //   todoData: [],
+  //   filter: 'all',
+  // };
+
+  let id = new Date().getTime();
+
+  const createTodoItem = (description: string, minutes: string, seconds: string) => {
     return {
       description,
       done: false,
-      id: this.id++,
+      id: id++,
       minutes,
       seconds,
       timerIsActive: true,
     };
-  }
+  };
 
-  deleteItem = (id: number) => {
-    this.setState(({ todoData }: IState) => {
+  const deleteItem = (id: number) => {
+    setTodoData((todoData): any => {
       const index = todoData.findIndex((el: TypeTask) => el.id === id);
       const before = todoData.slice(0, index);
       const after = todoData.slice(index + 1);
       const newTodoData = [...before, ...after];
-      return {
-        todoData: newTodoData,
-      };
+      return newTodoData;
     });
   };
 
-  addItem = (text: string, minutes: string, seconds: string) => {
+  const addItem = (text: string, minutes: string, seconds: string) => {
     if (!minutes.match(/^\d+$/) || !seconds.match(/^\d+$/)) {
       alert('Неверный формат времени ');
       return;
@@ -61,96 +62,84 @@ class App extends React.Component {
       alert('Введите время');
     }
 
-    const newItem = this.createTodoItem(text, minutes, seconds);
-
-    this.setState(({ todoData }: IState) => {
+    setTodoData((todoData): any => {
+      const newItem = createTodoItem(text, minutes, seconds);
       const newArray = [...todoData, newItem];
-      return {
-        todoData: newArray,
-      };
+      return newArray;
     });
   };
 
-  changeItem = (text: string, id: number) => {
-    this.setState(({ todoData }: IState) => {
+  const changeItem = (text: string, id: number) => {
+    setTodoData((todoData): any => {
       const index = todoData.findIndex((el: TypeTask) => el.id === id);
-      const oldItem = todoData[index];
+      const oldItem: any = todoData[index];
       const newItem = { ...oldItem, description: text };
 
       //put new object on array
       const before = todoData.slice(0, index);
       const after = todoData.slice(index + 1);
       const newTodoData = [...before, newItem, ...after];
-      return {
-        todoData: newTodoData,
-      };
+      return newTodoData;
     });
   };
 
-  onTick = (id: number) => {
-    this.setState(({ todoData }: IState) => {
+  const onTick = (id: number) => {
+    setTodoData((todoData): any => {
       const index = todoData.findIndex((el: TypeTask) => el.id === id);
-      const oldItem = todoData[index];
+      const oldItem: any = todoData[index];
       if (Number(oldItem.minutes) !== 0 && Number(oldItem.seconds) === 0) {
         const newItem = { ...oldItem, minutes: Number(oldItem.minutes) - 1, seconds: 59 };
         const before = todoData.slice(0, index);
         const after = todoData.slice(index + 1);
         const newTodoData = [...before, newItem, ...after];
-        return {
-          todoData: newTodoData,
-        };
+        return newTodoData;
       } else if (Number(oldItem.minutes) === 0 && Number(oldItem.seconds) === 0) {
         const newItem = { ...oldItem, minutes: 0, seconds: 0 };
         const before = todoData.slice(0, index);
         const after = todoData.slice(index + 1);
         const newTodoData = [...before, newItem, ...after];
+        return newTodoData;
       } else {
         const newItem = { ...oldItem, seconds: Number(oldItem.seconds) - 1 };
         const before = todoData.slice(0, index);
         const after = todoData.slice(index + 1);
         const newTodoData = [...before, newItem, ...after];
-        return {
-          todoData: newTodoData,
-        };
+        return newTodoData;
       }
     });
   };
 
-  onPlay = (id: number) => {
-    clearInterval(this.interval);
-    this.interval = setInterval(() => {
-      this.onTick(id);
-    }, 1000);
-  };
+  // const onPlay = (id: number) => {
+  //   clearInterval(interval);
+  //   interval = setInterval(() => {
+  //     onTick(id);
+  //   }, 1000);
+  // };
 
-  onStop = () => {
-    clearInterval(this.interval);
-  };
+  // const onStop = () => {
+  //   clearInterval(interval);
+  // };
 
-  onToggleDone = (id: number) => {
-    this.setState(({ todoData }: IState) => {
+  const onToggleDone = (id: number) => {
+    setTodoData((todoData): any => {
       const index = todoData.findIndex((el: TypeTask) => el.id === id);
-      const oldItem = todoData[index];
+      const oldItem: any = todoData[index];
       const newItem = { ...oldItem, done: !oldItem.done };
 
       //put new object on array
       const before = todoData.slice(0, index);
       const after = todoData.slice(index + 1);
       const newTodoData = [...before, newItem, ...after];
-      return {
-        todoData: newTodoData,
-      };
+      return newTodoData;
     });
     // console.log('toggle done', id);
   };
 
-  onFilterChange = (filterName: string) => {
-    this.setState({
-      filter: filterName,
-    });
+  const onFilterChange = (filterName: string) => {
+    setFilter(filterName);
   };
 
-  filter = (items: Array<TypeTask>, filter: string) => {
+  const getFilter = (items: Array<TypeTask>, filter: string) => {
     if (filter === 'all') {
       return items;
     } else if (filter === 'done') {
@@ -164,45 +153,43 @@ class App extends React.Component {
     }
   };
 
-  clearCompleted = () => {
-    this.setState(({ todoData }: IState) => {
+  const clearCompleted = () => {
+    setTodoData((todoData): any => {
       const newArr: Array<TypeTask> = [];
       todoData.forEach((item: TypeTask) => {
         if (!item.done) {
           newArr.push(item);
         }
       });
-      return { todoData: newArr };
+      return newArr;
     });
   };
 
-  render() {
-    const doneCount = this.state.todoData.filter((el: TypeTask) => el.done).length;
-    const visibleItems = this.filter(this.state.todoData, this.state.filter);
+  const doneCount = todoData.filter((el: TypeTask) => el.done).length;
+  const visibleItems = getFilter(todoData, filter);
 
-    return (
-      <section className="todoapp">
-        <NewTaskForm addItem={this.addItem} />
-        <TaskList
-          todoData={visibleItems}
-          onDeleted={this.deleteItem}
-          onToggleDone={this.onToggleDone}
-          // addItem={this.addItem}
-          changeItem={this.changeItem}
-          onTick={this.onTick}
-          onPlay={this.onPlay}
-          onStop={this.onStop}
-        />
-        <Footer
-          total={this.state.todoData.length}
-          doneCount={doneCount}
-          onFilterChange={this.onFilterChange}
-          filter={this.state.filter}
-          clearCompleted={this.clearCompleted}
-        />
-      </section>
-    );
-  }
-}
+  return (
+    <section className="todoapp">
+      <NewTaskForm addItem={addItem} />
+      <TaskList
+        todoData={visibleItems}
+        onDeleted={deleteItem}
+        onToggleDone={onToggleDone}
+        // addItem={this.addItem}
+        changeItem={changeItem}
+        onTick={onTick}
+        // onPlay={onPlay}
+        // onStop={onStop}
+      />
+      <Footer
+        total={todoData.length}
+        doneCount={doneCount}
+        onFilterChange={onFilterChange}
+        filter={filter}
+        clearCompleted={clearCompleted}
+      />
+    </section>
+  );
+};
 
 export default App;

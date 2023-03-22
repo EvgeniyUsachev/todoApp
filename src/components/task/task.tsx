@@ -3,86 +3,85 @@ import { formatDistanceToNow } from 'date-fns';
 
 type TypeProps = {
   description: string;
-  key: number;
+  // key: number;
   onDeleted: (e: React.MouseEvent<HTMLElement>) => void;
   onToggleDone: (e: React.MouseEvent<HTMLElement>) => void;
   done: boolean;
-  addItem: () => void;
+  // addItem: () => void;
   changeItem: (text: string) => void;
   minutes: string;
   seconds: string;
-  onStop: () => void;
+  // onStop: () => void;
   timerIsActive: boolean;
-  onPlay: () => void;
+  // onPlay: () => void;
   onTick: () => void;
 };
-class Task extends React.Component {
-  state = {
-    editing: false,
-    value: '',
-  };
+const Task = (props: TypeProps) => {
+  const [editing, setEditing] = React.useState(false);
+  const [value, setValue] = React.useState('');
 
-  interval: any;
+  const interval: any = React.useRef();
 
-  static defaultProps = {
-    description: 'add description property',
-    key: 1,
-    onDeleted: () => {
-      1;
-    },
-    onToggleDone: () => {
-      1;
-    },
-    done: false,
-    addItem: () => {
-      1;
-    },
-    changeItem: () => {
-      1;
-    },
-  };
+  //  defaultProps = {
+  //   description: 'add description property',
+  //   key: 1,
+  //   onDeleted: () => {
+  //     1;
+  //   },
+  //   onToggleDone: () => {
+  //     1;
+  //   },
+  //   done: false,
+  //   addItem: () => {
+  //     1;
+  //   },
+  //   changeItem: () => {
+  //     1;
+  //   },
+  // };
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  componentDidMount() {
-    this.interval = setInterval(() => {
-      this.props.onTick();
+  React.useEffect(() => {
+    interval.current = setInterval(() => {
+      props.onTick();
     }, 1000);
-  }
 
-  onEdit = () => {
-    this.setState({
-      editing: true,
-      value: this.props.description,
-    });
+    return () => {
+      clearInterval(interval.current);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (props.done) {
+      clearInterval(interval.current);
+    }
+  });
+
+  const onEdit = () => {
+    setEditing(true);
+    setValue(props.description);
   };
 
-  onLabelChange = (e: React.FormEvent<HTMLInputElement>) => {
-    this.setState({
-      value: e.currentTarget.value,
-    });
+  const onLabelChange = (e: React.FormEvent<HTMLInputElement>) => {
+    setValue(e.currentTarget.value);
   };
 
-  onSubmit = (e: React.FormEvent) => {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    this.setState({
-      editing: false,
-    });
+    setEditing(false);
 
-    this.props.changeItem(this.state.value);
+    props.changeItem(value);
   };
 
-  onPlay = () => {
-    clearInterval(this.interval);
-    this.interval = setInterval(() => {
-      this.props.onTick();
+  const onPlay = () => {
+    clearInterval(interval.current);
+    interval.current = setInterval(() => {
+      props.onTick();
     }, 1000);
   };
 
-  onStop = () => {
-    clearInterval(this.interval);
+  const onStop = () => {
+    clearInterval(interval.current);
+    console.log('onStop clicked');
   };
 
   // tick = (minutes: string, seconds: string) => {
@@ -93,50 +92,48 @@ class Task extends React.Component {
   //   }
   // };
 
-  props: TypeProps = this.props;
+  // props: TypeProps = this.props;
 
-  startTime = new Date().getTime();
+  const startTime = new Date().getTime();
 
-  render() {
-    const { editing, value } = this.state;
+  // const { editing, value } = this.state;
 
-    const time = formatDistanceToNow(this.startTime, {
-      includeSeconds: true,
-    });
+  const time = formatDistanceToNow(startTime, {
+    includeSeconds: true,
+  });
 
-    let className = '';
-    if (this.props.done) {
-      className = 'completed';
-    }
-    if (editing) {
-      className = 'editing';
-    }
-
-    console.log('mins', this.props.minutes);
-    console.log('active', this.props.timerIsActive);
-
-    return (
-      <li className={className}>
-        <div className="view">
-          <input className="toggle" type="checkbox" onClick={this.props.onToggleDone} />
-          <label>
-            <span className="title">{this.props.description}</span>
-            <span className="description">
-              <button className="icon icon-play" onClick={this.onPlay}></button>
-              <button className="icon icon-pause" onClick={this.onStop}></button>
-              {this.props.minutes}:{this.props.seconds}
-            </span>
-            <span className="description">created {time} ago </span>
-          </label>
-          <button className="icon icon-edit" onClick={this.onEdit}></button>
-          <button className="icon icon-destroy" onClick={this.props.onDeleted}></button>
-        </div>
-        <form onSubmit={this.onSubmit}>
-          <input className="edit" type="text" onChange={this.onLabelChange} value={value} />
-        </form>
-      </li>
-    );
+  let className = '';
+  if (props.done) {
+    className = 'completed';
   }
-}
+  if (editing) {
+    className = 'editing';
+  }
+
+  // console.log('mins', props.minutes);
+  // console.log('active', props.timerIsActive);
+
+  return (
+    <li className={className}>
+      <div className="view">
+        <input className="toggle" type="checkbox" onClick={props.onToggleDone} />
+        <label>
+          <span className="title">{props.description}</span>
+          <span className="description">
+            <button className="icon icon-play" onClick={onPlay}></button>
+            <button className="icon icon-pause" onClick={onStop}></button>
+            {props.minutes}:{props.seconds}
+          </span>
+          <span className="description">created {time} ago </span>
+        </label>
+        <button className="icon icon-edit" onClick={onEdit}></button>
+        <button className="icon icon-destroy" onClick={props.onDeleted}></button>
+      </div>
+      <form onSubmit={onSubmit}>
+        <input className="edit" type="text" onChange={onLabelChange} value={value} />
+      </form>
+    </li>
+  );
+};
 
 export default Task;
